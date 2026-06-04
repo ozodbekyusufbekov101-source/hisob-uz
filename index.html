@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hisob.uz — Small Business Ledger</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bizning maxsus stillarimiz -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex overflow-hidden">
+
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-slate-100 border-r border-slate-200 flex flex-col justify-between h-screen shrink-0">
+        <div>
+            <!-- Logo Section -->
+            <div class="p-6 border-b border-slate-200">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-blue-200">
+                        <i class="fa-solid fa-wallet text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-blue-900 leading-none">Hisob.uz</h1>
+                        <span class="text-xs text-slate-500 font-medium">Small Business Ledger</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="p-4 space-y-1">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200 text-blue-700 bg-blue-50">
+                    <i class="fa-solid fa-chart-pie text-base w-5"></i>
+                    Dashboard
+                </button>
+                <button onclick="switchTab('transactions')" id="nav-transactions" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200 text-slate-600 hover:bg-slate-200/60">
+                    <i class="fa-solid fa-receipt text-base w-5"></i>
+                    Transactions
+                </button>
+                <button onclick="switchTab('debtbook')" id="nav-debtbook" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200 text-slate-600 hover:bg-slate-200/60">
+                    <i class="fa-solid fa-book-bookmark text-base w-5"></i>
+                    Debt Book
+                </button>
+                <button onclick="alert('Tez kunda: Ombor boshqaruvi moduli integratsiya qilinadi!')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-sm text-slate-400 hover:bg-slate-200/30 cursor-not-allowed">
+                    <span class="flex items-center gap-3">
+                        <i class="fa-solid fa-boxes-stacked text-base w-5"></i>
+                        Inventory
+                    </span>
+                    <span class="text-[10px] bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded-md font-bold">SOON</span>
+                </button>
+                <button onclick="switchTab('reports')" id="nav-reports" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200 text-slate-600 hover:bg-slate-200/60">
+                    <i class="fa-solid fa-chart-column text-base w-5"></i>
+                    Reports
+                </button>
+            </nav>
+
+            <!-- Quick Action Buttons -->
+            <div class="px-4 mt-6">
+                <button onclick="openModal('transaction-modal')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-blue-200 hover:shadow-none transition-all duration-200 text-sm">
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    Yangi tranzaksiya
+                </button>
+                <button onclick="openModal('debt-modal')" class="w-full mt-2 border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 text-sm">
+                    <i class="fa-solid fa-user-plus text-xs"></i>
+                    Qarz qo'shish
+                </button>
+            </div>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="p-4 border-t border-slate-200 space-y-1">
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-200/50 transition-all">
+                <i class="fa-solid fa-circle-question text-base"></i>
+                Help Center
+            </a>
+            <button onclick="alert('Tizimdan muvaffaqiyatli chiqildi!')" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-semibold text-rose-600 hover:bg-rose-50 transition-all text-left">
+                <i class="fa-solid fa-right-from-bracket text-base"></i>
+                Log Out
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN WORKSPACE -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden">
+        
+        <!-- HEADER -->
+        <header class="bg-white border-b border-slate-200 h-16 shrink-0 px-8 flex items-center justify-between">
+            <!-- Search Bar -->
+            <div class="relative w-96">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <input type="text" id="global-search" oninput="handleGlobalSearch(this.value)" placeholder="Mijoz yoki tranzaksiyalarni qidirish..." class="w-full bg-slate-100 hover:bg-slate-200/70 focus:bg-white border border-transparent focus:border-blue-500 text-sm pl-11 pr-4 py-2 rounded-xl outline-none transition-all duration-200">
+            </div>
+
+            <!-- Profile & Utility Icons -->
+            <div class="flex items-center gap-4">
+                <button onclick="syncData()" class="p-2 text-slate-500 hover:text-blue-600 hover:bg-slate-100 rounded-xl transition-all" title="Ma'lumotlarni yangilash">
+                    <i class="fa-solid fa-rotate text-lg"></i>
+                </button>
+            <button class="p-2 text-slate-500 hover:text-blue-600 hover:bg-slate-100 rounded-xl transition-all relative">
+            <i class="fa-solid fa-bell text-lg"></i>
+            <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white"></span>
+        </button>
+
+        <button class="p-2 text-slate-500 hover:text-blue-600 hover:bg-slate-100 rounded-xl transition-all">
+            <i class="fa-solid fa-gear text-lg"></i> </button>
+                </button>
+                <div class="h-8 w-px bg-slate-200 mx-1"></div>
+                <div class="flex items-center gap-3">
+                    <div class="text-right">
+                        <p class="text-sm font-bold text-slate-800 leading-none">Azizbek</p>
+                        <span class="text-[10px] text-slate-400 font-bold">ADMINISTRATOR</span>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop" alt="Profile" class="w-10 h-10 rounded-xl object-cover border-2 border-blue-100">
+                </div>
+            </div>
+        </header>
+
+        <!-- VIEW WRAPPER -->
+        <main class="flex-1 overflow-y-auto p-8 bg-slate-50">
+
+            <!-- 1. DASHBOARD VIEW -->
+            <section id="view-dashboard" class="space-y-8 dynamic-view">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Xush kelibsiz, Azizbek</h2>
+                    <p class="text-sm text-slate-500 mt-1">Bugungi biznes hisob-kitoblaringiz va ko'rsatkichlaringizni tekshiring.</p>
+                </div>
+
+                <!-- Metrics Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Umumiy Balans (UZS)</span>
+                        <h3 class="text-2xl font-extrabold text-slate-900 mt-2" id="metric-balance-uzs">124,500,000 UZS</h3>
+                        <p class="text-xs text-emerald-600 font-bold mt-2 flex items-center gap-1"><i class="fa-solid fa-trend-up"></i> +4.2% o'tgan oydan</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Umumiy Balans (USD)</span>
+                        <h3 class="text-2xl font-extrabold text-slate-900 mt-2" id="metric-balance-usd">$9,850</h3>
+                        <p class="text-xs text-slate-400 font-bold mt-2">Markaziy Bank kursi bo'yicha</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Umumiy Qarzlar</span>
+                        <h3 class="text-2xl font-extrabold text-rose-600 mt-2" id="metric-debt">0 UZS</h3>
+                        <p class="text-xs text-rose-500 font-bold mt-2 flex items-center gap-1"><i class="fa-solid fa-triangle-exclamation"></i> Xavf darajasi: O'rta</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Oylik Sof Foyda</span>
+                        <h3 class="text-2xl font-extrabold text-emerald-600 mt-2" id="metric-profit">28,400,000 UZS</h3>
+                        <p class="text-xs text-emerald-600 font-bold mt-2 flex items-center gap-1"><i class="fa-solid fa-trend-up"></i> +12% iyundan buyon</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Weekly Flow Chart -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm lg:col-span-2">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h4 class="font-extrabold text-slate-800 text-base">Haftalik pul oqimi</h4>
+                                <p class="text-xs text-slate-400 mt-0.5">Kirim va chiqimlar solishtiruvi</p>
+                            </div>
+                        </div>
+                        <div class="h-64 flex items-end justify-between px-4 pt-4 relative">
+                            <div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-50 z-0">
+                                <div class="border-b border-dashed border-slate-100 h-0 w-full"></div>
+                                <div class="border-b border-dashed border-slate-100 h-0 w-full"></div>
+                                <div class="border-b border-dashed border-slate-100 h-0 w-full"></div>
+                            </div>
+                            <div class="flex flex-col items-center gap-2 z-10 w-12">
+                                <div class="w-full flex items-end justify-center gap-1 h-44">
+                                    <div class="w-3.5 bg-emerald-500 rounded-t-md h-[60%]"></div>
+                                    <div class="w-3.5 bg-rose-500 rounded-t-md h-[40%]"></div>
+                                </div>
+                                <span class="text-xs font-bold text-slate-400">Du</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-2 z-10 w-12">
+                                <div class="w-full flex items-end justify-center gap-1 h-44">
+                                    <div class="w-3.5 bg-emerald-500 rounded-t-md h-[75%]"></div>
+                                    <div class="w-3.5 bg-rose-500 rounded-t-md h-[30%]"></div>
+                                </div>
+                                <span class="text-xs font-bold text-slate-400">Se</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-2 z-10 w-12">
+                                <div class="w-full flex items-end justify-center gap-1 h-44">
+                                    <div class="w-3.5 bg-emerald-500 rounded-t-md h-[50%]"></div>
+                                    <div class="w-3.5 bg-rose-500 rounded-t-md h-[55%]"></div>
+                                </div>
+                                <span class="text-xs font-bold text-slate-400">Cho</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-2 z-10 w-12">
+                                <div class="w-full flex items-end justify-center gap-1 h-44">
+                                    <div class="w-3.5 bg-emerald-500 rounded-t-md h-[90%]"></div>
+                                    <div class="w-3.5 bg-rose-500 rounded-t-md h-[45%]"></div>
+                                </div>
+                                <span class="text-xs font-bold text-slate-400">Pay</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mini transactions -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                        <h4 class="font-extrabold text-slate-800 text-base mb-4">So'nggi Tranzaksiyalar</h4>
+                        <div class="space-y-3" id="mini-transactions">
+                            <!-- JS orqali to'ldiriladi -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. TRANSACTIONS VIEW -->
+            <section id="view-transactions" class="space-y-8 dynamic-view hidden">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Tranzaksiyalar</h2>
+                        <p class="text-sm text-slate-500 mt-1">Barcha kassa kirim-chiqimlari.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap gap-4 items-end">
+                    <div class="flex-1 min-w-[150px]">
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Turkum bo'yicha filter</label>
+                        <select id="filter-type" onchange="filterTransactions()" class="w-full bg-slate-100 text-sm px-4 py-2.5 rounded-xl outline-none font-semibold">
+                            <option value="all">Barchasi</option>
+                            <option value="kirim">Kirim</option>
+                            <option value="chiqim">Chiqim</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50/75 border-b border-slate-200">
+                                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase">Sana</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase">Mijoz / Tavsif</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase">Turkum</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase text-right">Miqdor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactions-table-body" class="divide-y divide-slate-100">
+                            <!-- JS orqali to'ldiriladi -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 3. DEBT BOOK VIEW -->
+            <section id="view-debtbook" class="space-y-8 dynamic-view hidden">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Qarz Daftari</h2>
+                    <p class="text-sm text-slate-500 mt-1">Mijozlar qarz balansi va qaytarish muddatlari.</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50/75 border-b border-slate-200">
+                                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase">Mijoz Ismi</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase">Qarz Miqdori</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase">Muddat</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase">Holat</th>
+                            </tr>
+                        </thead>
+                        <tbody id="debts-table-body" class="divide-y divide-slate-100">
+                            <!-- JS orqali to'ldiriladi -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 4. REPORTS VIEW -->
+            <section id="view-reports" class="space-y-8 dynamic-view hidden">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Moliyaviy Hisobotlar</h2>
+                    <p class="text-sm text-slate-500 mt-1">Biznesingizning oylik va yillik tahliliy ko'rsatkichlari.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <p class="text-slate-600 text-sm">Ushbu bo'limda siz barcha kassa, foyda va zarar hisobotlarini grafik va PDF ko'rinishida yuklab olishingiz mumkin.</p>
+                    <button onclick="window.print()" class="mt-4 bg-blue-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-blue-700 transition-all">
+                        <i class="fa-solid fa-file-pdf mr-2"></i> To'liq hisobotni chop etish
+                    </button>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- MODAL: TRANSAKSIYA QO'SHISH -->
+    <div id="transaction-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl w-[450px] shadow-2xl p-6 border border-slate-100">
+            <div class="flex items-center justify-between mb-4 border-b pb-3">
+                <h3 class="font-extrabold text-slate-900 text-lg">Yangi Tranzaksiya qo'shish</h3>
+                <button onclick="closeModal('transaction-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="tx-form" onsubmit="saveTransaction(event)" class="space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-slate-500 block mb-1">Mijoz / Tavsif</label>
+                    <input type="text" id="tx-desc" required class="w-full bg-slate-50 border p-2.5 rounded-xl outline-none focus:border-blue-500 text-sm">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-500 block mb-1">Turkum</label>
+                    <select id="tx-type" class="w-full bg-slate-50 border p-2.5 rounded-xl outline-none text-sm font-semibold">
+                        <option value="kirim">Kirim (Daromad)</option>
+                        <option value="chiqim">Chiqim (Xarajat)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-500 block mb-1">Miqdor (UZS)</label>
+                    <input type="number" id="tx-amount" required class="w-full bg-slate-50 border p-2.5 rounded-xl outline-none focus:border-blue-500 text-sm">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl text-sm hover:bg-blue-700 transition-all">Saqlash</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: QARZ QO'SHISH -->
+    <div id="debt-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl w-[450px] shadow-2xl p-6 border border-slate-100">
+            <div class="flex items-center justify-between mb-4 border-b pb-3">
+                <h3 class="font-extrabold text-slate-900 text-lg">Yangi Qarz qo'shish</h3>
+                <button onclick="closeModal('debt-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="debt-form" onsubmit="saveDebt(event)" class="space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-slate-500 block mb-1">Mijoz ismi</label>
+                    <input type="text" id="debt-name" required class="w-full bg-slate-50 border p-2.5 rounded-xl outline-none focus:border-blue-500 text-sm">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-500 block mb-1">Qarz miqdori (UZS)</label>
+                    <input type="number" id="debt-amount" required class="w-full bg-slate-50 border p-2.5 rounded-xl outline-none focus:border-blue-500 text-sm">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-500 block mb-1">To'lash muddati</label>
+                    <input type="date" id="debt-date" required class="w-full bg-slate-50 border p-2.5 rounded-xl outline-none focus:border-blue-500 text-sm">
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl text-sm hover:bg-emerald-700 transition-all">Qarzni Yozish</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT MODULLARINI BIRLASHTIRISH -->
+    <script src="js/data.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/modals.js"></script>
+    <script src="js/transactions.js"></script>
+    <script src="js/debts.js"></script>
+    <script src="js/app.js"></script>
+<script type="module" src="/src/js/app.js"></script>
+</body>
+<script type="module" src="/src/js/app.js"></script>
+</html>
