@@ -1,8 +1,7 @@
-// Modal oynalarni ochish va yopish boshqaruvi
-function openModal(id) { 
+window.openModal = function(id) { 
     document.getElementById(id).classList.remove('hidden'); 
 }
 
- closeModal(id) { 
+window.closeModal = function(id) { 
     document.getElementById(id).classList.add('hidden'); 
 }
