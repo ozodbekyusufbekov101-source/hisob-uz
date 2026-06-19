@@ -1,26 +1,36 @@
-// Global qidiruv tizimi (Tranzaksiyalar orasidan qidirish)
-function handleGlobalSearch(query) {
-    const lowerQuery = query.toLowerCase();
-    const txRows = document.querySelectorAll('#transactions-table-body tr');
-    
-    txRows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        if (text.includes(lowerQuery)) row.classList.remove('hidden');
-        else row.classList.add('hidden');
-    });
+import React, { useState } from 'react';
+
+function App() {
+  // 1. Funksiyalar
+  const switchTab = (tab) => {
+    console.log("Hozirgi sahifa:", tab);
+    // Bu yerda sahifani o'zgartiruvchi logic bo'ladi
+  };
+
+  const openModal = (id) => {
+    document.getElementById(id).classList.remove('hidden');
+  };
+
+  // 2. JSX (HTML kodlaringiz shu yerda bo'ladi)
+  return (
+    <div className="bg-slate-50 min-h-screen">
+      {/* Sidebar tugmasi misoli */}
+      <button 
+        onClick={() => switchTab('dashboard')} 
+        className="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl"
+      >
+        Dashboard
+      </button>
+
+      {/* Modal tugmasi misoli */}
+      <button 
+        onClick={() => openModal('transaction-modal')} 
+        className="bg-blue-600 text-white"
+      >
+        Yangi tranzaksiya
+      </button>
+    </div>
+  );
 }
 
-// Ma'lumotlarni yangilash (Sinxronizatsiya) imitatsiyasi
-function syncData() {
-    alert("Ma'lumotlar server bilan muvaffaqiyatli sinxronizatsiya qilindi!");
-    initApp();
-}
-
-// Ilovani to'liq ishga tushirish (Barcha ma'lumotlarni render qilish)
-function initApp() {
-    renderTransactions();
-    renderDebts();
-}
-
-// Brauzer yuklanishi bilan ishga tushirish
-window.onload = initApp;
+export default App;
